@@ -78,9 +78,12 @@ public class SettingsManager : MonoBehaviour
 
     public void SetBrightness(float value)
     {
-        brightness = value;
-        ApplyBrightness();
-        SaveSettings();
+        Debug.Log($"[SettingsManager] SetBrightness called with value: {value}");
+        brightness = Mathf.Clamp(value, 0.2f, 1f);
+        Debug.Log($"[SettingsManager] Brightness set to: {brightness}");
+        PlayerPrefs.SetFloat("brightness", brightness);
+        PlayerPrefs.Save();
+        ApplyBrightness();          // ← THIS was missing
     }
 
     // -------------------------
@@ -110,10 +113,24 @@ public class SettingsManager : MonoBehaviour
 
     private void ApplyBrightness()
     {
-        if (brightnessOverlay == null) return;
-        var c = brightnessOverlay.color;
-        c.a = Mathf.Lerp(0.8f, 0f, brightness);
-        brightnessOverlay.color = c;
+        //var overlay = GameObject.Find("BrightnessOverlay")?.GetComponent<Image>();
+        //if (overlay != null)
+        //{
+        //    float alpha = 1f - brightness;                  // brightness 1 → alpha 0
+        //    var c = overlay.color;
+        //    overlay.color = new Color(c.r, c.g, c.b, alpha);
+        //}
+        float alpha = 1f - brightness;                  // brightness 1 → alpha 0
+        Debug.Log($"[SettingsManager] Applying brightness with alpha: {alpha}");
+        if(brightnessOverlay != null)
+        {
+            var c = brightnessOverlay.color;
+            brightnessOverlay.color = new Color(c.r, c.g, c.b, alpha);
+        }
+        else
+        {
+            Debug.LogWarning("[SettingsManager] Brightness overlay is not assigned!");
+        }
     }
 
     // -------------------------

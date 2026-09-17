@@ -16,31 +16,47 @@ public class SettingsUI : MonoBehaviour
 
     void Start()
     {
-        // Load current values into the UI
         var sm = SettingsManager.Instance;
         if (sm == null)
         {
-            Debug.LogError("SettingsManager.Instance is null! Make sure it's in the scene.");
+            Debug.LogError("SettingsManager.Instance is null!");
             return;
         }
 
-        musicVolumeSlider.value = sm.musicVolume;
-        musicMuteToggle.isOn = sm.musicMuted;
-        sfxVolumeSlider.value = sm.sfxVolume;
-        sfxMuteToggle.isOn = sm.sfxMuted;
-        brightnessSlider.value = sm.brightness;
-
-        // Hook up listeners
-        musicVolumeSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
-        musicMuteToggle.onValueChanged.AddListener(OnMusicMuteChanged);
-        sfxVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
-        sfxMuteToggle.onValueChanged.AddListener(OnSFXMuteChanged);
-        brightnessSlider.onValueChanged.AddListener(OnBrightnessChanged);
+        if (musicVolumeSlider != null)
+        {
+            musicVolumeSlider.value = sm.musicVolume;
+            musicVolumeSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
+        }
+        if (musicMuteToggle != null)
+        {
+            musicMuteToggle.isOn = sm.musicMuted;
+            musicMuteToggle.onValueChanged.AddListener(OnMusicMuteChanged);
+        }
+        if (sfxVolumeSlider != null)
+        {
+            sfxVolumeSlider.value = sm.sfxVolume;
+            sfxVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
+        }
+        if (sfxMuteToggle != null)
+        {
+            sfxMuteToggle.isOn = sm.sfxMuted;
+            sfxMuteToggle.onValueChanged.AddListener(OnSFXMuteChanged);
+        }
+        if (brightnessSlider != null)
+        {
+            brightnessSlider.value = sm.brightness;
+            brightnessSlider.onValueChanged.AddListener(OnBrightnessChanged);
+        }
     }
 
     void OnMusicVolumeChanged(float value) => SettingsManager.Instance.SetMusicVolume(value);
     void OnMusicMuteChanged(bool value) => SettingsManager.Instance.SetMusicMuted(value);
     void OnSFXVolumeChanged(float value) => SettingsManager.Instance.SetSFXVolume(value);
     void OnSFXMuteChanged(bool value) => SettingsManager.Instance.SetSFXMuted(value);
-    void OnBrightnessChanged(float value) => SettingsManager.Instance.SetBrightness(value);
+    //void OnBrightnessChanged(float value) => SettingsManager.Instance.SetBrightness(value);
+    void OnBrightnessChanged(float value)
+    {
+        SettingsManager.Instance.SetBrightness(value);
+    }
 }
