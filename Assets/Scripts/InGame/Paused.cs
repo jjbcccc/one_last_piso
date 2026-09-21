@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class Pauseed : MonoBehaviour
 {
@@ -32,11 +33,13 @@ public class Pauseed : MonoBehaviour
 
     void Update()
     {
-        // Optional: toggle pause with the Escape key
-        if (Input.GetKeyDown(KeyCode.Escape))
+        // Toggle pause with the Escape key (new Input System)
+        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            if (pausePanel.activeSelf) Continue();
-            else Open();
+            if (pausePanel != null && pausePanel.activeSelf)
+                Continue();
+            else
+                Open();
         }
     }
 

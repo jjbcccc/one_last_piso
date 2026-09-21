@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.XR;
+using UnityEngine.InputSystem;
 
 public class PhiController : MonoBehaviour
 {
@@ -14,11 +14,9 @@ public class PhiController : MonoBehaviour
     [SerializeField] private float jumpForce = 12f;
     [SerializeField] private float coyoteTime = 0.12f;
     [SerializeField] private float jumpBufferTime = 0.12f;
-    //[SerializeField] private float doubleJumpForce = 10f;
     [SerializeField] private int maxJumps = 2;
     [SerializeField] private float groundCheckLockout = 0.1f;
     [SerializeField] private bool debugGround = false;
-
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
@@ -49,11 +47,9 @@ public class PhiController : MonoBehaviour
     public bool ExternalJumpPressed { get; set; }
     public bool ExternalHidePressed { get; set; }
 
-
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-
         normalScale = transform.localScale;
         jumpsRemaining = maxJumps;
     }
@@ -63,7 +59,7 @@ public class PhiController : MonoBehaviour
         ReadInput();
         CheckGround();
         HandleJumpInput();
-        HandleStance();   
+        HandleStance();
     }
 
     private void FixedUpdate()
@@ -79,53 +75,18 @@ public class PhiController : MonoBehaviour
             return;
         }
 
-        // Keyboard (WASD / arrows) first
-        float keyboard = Input.GetAxisRaw("Horizontal");
+        // --- Keyboard via new Input System ---
+        float keyboard = 0f;
+        var kb = Keyboard.current;
+        if (kb != null)
+        {
+            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) keyboard += 1f;
+            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) keyboard -= 1f;
+        }
 
-        // If keyboard is neutral, use touch input
+        // Keyboard takes priority; otherwise use touch input
         horizontalInput = Mathf.Abs(keyboard) > 0.01f ? keyboard : ExternalHorizontal;
     }
-
-    //private void CheckGround()
-    //{
-    //    isGrounded = Physics2D.OverlapCircle(
-    //        groundCheck.position,
-    //        groundCheckRadius,
-    //        groundLayer
-    //    );
-
-    //    //if (isGrounded && rb.linearVelocity.y <= 0.01f)
-    //    //{
-    //    //    coyoteCounter = coyoteTime;
-    //    //    jumpsRemaining = maxJumps; // resets jumps on landing
-    //    //}
-    //    //else if (!isGrounded)
-    //    //{
-    //    //    coyoteCounter -= Time.deltaTime;
-    //    //}
-
-    //    if (rb.linearVelocity.y > 0.01f) touchingGround = false;
-    //    isGrounded = touchingGround;
-
-    //    //if(lockoutCounter > 0f)
-    //    //{
-    //    //    lockoutCounter -= Time.deltaTime;
-    //    //    isGrounded = false;
-    //    //    coyoteCounter -= Time.deltaTime;
-    //    //    return;
-    //    //}
-    //    //isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-    //    if (isGrounded && rb.linearVelocity.y <= 0.01f)
-    //    {
-    //        coyoteCounter = coyoteTime;
-    //        jumpsRemaining = maxJumps;
-    //    }
-    //    else
-    //    {
-    //        coyoteCounter -= Time.deltaTime;
-    //    }
-    //    Debug.Log($"grounded={isGrounded} velY={rb.linearVelocity.y:F2} jumps={jumpsRemaining}");
-    //}
 
     private void CheckGround()
     {
@@ -157,7 +118,6 @@ public class PhiController : MonoBehaviour
     private void HandleMovement()
     {
         float targetSpeed = isHiding ? 0f : horizontalInput * moveSpeed;
-
         float difference = targetSpeed - rb.linearVelocity.x;
 
         float currentAcceleration;
@@ -170,46 +130,33 @@ public class PhiController : MonoBehaviour
 
         if (Mathf.Abs(horizontalInput) > 0.01f)
         {
-            currentAcceleration = isGrounded
-                ? acceleration
-                : airAcceleration;
+            currentAcceleration = isGrounded ? acceleration : airAcceleration;
         }
         else
         {
-            currentAcceleration = isGrounded
-                ? deceleration
-                : airDeceleration;
+            currentAcceleration = isGrounded ? deceleration : airDeceleration;
         }
 
-        //float movement = difference * currentAcceleration * Time.fixedDeltaTime;
         float movement = difference * currentAcceleration;
 
-        rb.AddForce(
-            Vector2.right * movement,
-            ForceMode2D.Force
-        );
+        rb.AddForce(Vector2.right * movement, ForceMode2D.Force);
 
-        // Prevent speed from exceeding the intended movement speed.
-        float clampedX = Mathf.Clamp(
-            rb.linearVelocity.x,
-            -moveSpeed,
-            moveSpeed
-        );
-
-        rb.linearVelocity = new Vector2(
-            clampedX,
-            rb.linearVelocity.y
-        );
+        float clampedX = Mathf.Clamp(rb.linearVelocity.x, -moveSpeed, moveSpeed);
+        rb.linearVelocity = new Vector2(clampedX, rb.linearVelocity.y);
     }
 
     private void HandleJumpInput()
     {
-        // Combine keyboard + touch into one "jump pressed this frame"
-        bool jumpDown = Input.GetKeyDown(KeyCode.Space)
-                     || Input.GetKeyDown(KeyCode.UpArrow)
-                     || ExternalJumpPressed;
+        // --- Keyboard jump via new Input System ---
+        bool keyboardJump = false;
+        var kb = Keyboard.current;
+        if (kb != null)
+        {
+            keyboardJump = kb.spaceKey.wasPressedThisFrame
+                        || kb.upArrowKey.wasPressedThisFrame;
+        }
 
-        // Consume the external flag — it's a one-frame event
+        bool jumpDown = keyboardJump || ExternalJumpPressed;
         ExternalJumpPressed = false;
 
         if (jumpDown)
@@ -237,23 +184,22 @@ public class PhiController : MonoBehaviour
 
     private void Jump(bool isDoubleJump = false)
     {
-        //rb.linearVelocity = new Vector2(
-        //    rb.linearVelocity.x,
-        //    jumpForce
-        //);
-        //float force = isDoubleJump ? doubleJumpForce : jumpForce;
-        //rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-        //rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         lockoutCounter = groundCheckLockout;
     }
 
     private void HandleStance()
     {
-        bool hideDown = Input.GetKeyDown(KeyCode.S)
-                     || Input.GetKeyDown(KeyCode.DownArrow)
-                     || ExternalHidePressed;
+        // --- Keyboard hide toggle via new Input System ---
+        bool keyboardHide = false;
+        var kb = Keyboard.current;
+        if (kb != null)
+        {
+            keyboardHide = kb.sKey.wasPressedThisFrame
+                        || kb.downArrowKey.wasPressedThisFrame;
+        }
 
+        bool hideDown = keyboardHide || ExternalHidePressed;
         ExternalHidePressed = false;
 
         if (hideDown && (isGrounded || isHiding))
@@ -268,13 +214,6 @@ public class PhiController : MonoBehaviour
 
         if (isHiding)
         {
-            //transform.localScale = new Vector3(
-            //    normalScale.x,
-            //    normalScale.y * hiddenScaleY,
-            //    normalScale.z
-            //);
-
-            // Snap horizontal velocity to zero so the brake feels instant.
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         }
         else
@@ -285,14 +224,9 @@ public class PhiController : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        if (groundCheck == null)
-            return;
+        if (groundCheck == null) return;
 
         Gizmos.color = Color.green;
-
-        Gizmos.DrawWireSphere(
-            groundCheck.position,
-            groundCheckRadius
-        );
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 }
