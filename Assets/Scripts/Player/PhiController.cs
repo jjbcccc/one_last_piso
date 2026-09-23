@@ -95,11 +95,17 @@ public class PhiController : MonoBehaviour
             lockoutCounter -= Time.deltaTime;
             isGrounded = false;
             coyoteCounter -= Time.deltaTime;
-            if (debugGround) Debug.Log($"[locked out] velY={rb.linearVelocity.y:F2}");
             return;
         }
 
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        bool overlap = Physics2D.OverlapCircle(
+            groundCheck.position, groundCheckRadius, groundLayer);
+
+        // Not grounded while moving upward
+        if (rb.linearVelocity.y > 0.01f)
+            overlap = false;
+
+        isGrounded = overlap;
 
         if (isGrounded)
         {
@@ -147,7 +153,6 @@ public class PhiController : MonoBehaviour
 
     private void HandleJumpInput()
     {
-        // --- Keyboard jump via new Input System ---
         bool keyboardJump = false;
         var kb = Keyboard.current;
         if (kb != null)
@@ -170,16 +175,14 @@ public class PhiController : MonoBehaviour
             return;
         }
 
-        if (jumpBufferCounter <= 0f || jumpsRemaining <= 0) return;
+        if (jumpBufferCounter <= 0f) return;
+        if (jumpsRemaining <= 0) return;
+        if (coyoteCounter <= 0f) return;   // must be grounded or in coyote time
 
-        bool canGroundJump = coyoteCounter > 0f && jumpsRemaining == maxJumps;
-        if (canGroundJump || !isGrounded)
-        {
-            Jump();
-            jumpBufferCounter = 0f;
-            coyoteCounter = 0f;
-            jumpsRemaining--;
-        }
+        Jump();
+        jumpBufferCounter = 0f;
+        coyoteCounter = 0f;
+        jumpsRemaining--;
     }
 
     private void Jump(bool isDoubleJump = false)
