@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PhiVisuals : MonoBehaviour
@@ -7,13 +8,21 @@ public class PhiVisuals : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRenderer;
 
     [Header("Sprites")]
-    [Tooltip("Sprite shown when Phi is standing (not hiding).")]
     [SerializeField] private Sprite normalSprite;
-
-    [Tooltip("Sprite shown when Phi is hiding.")]
     [SerializeField] private Sprite hiddenSprite;
 
+    [Header("Blink")]
+    [SerializeField] private float blinkInterval = 0.08f;
+
+    private Coroutine blinkRoutine;
+
     private void Reset()
+    {
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    private void Awake()
     {
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
@@ -28,9 +37,36 @@ public class PhiVisuals : MonoBehaviour
     void Update()
     {
         if (phi == null || spriteRenderer == null) return;
+        if (blinkRoutine != null) return;   // don't override blink
 
         Sprite desired = phi.IsHiding ? hiddenSprite : normalSprite;
         if (desired != null && spriteRenderer.sprite != desired)
             spriteRenderer.sprite = desired;
+    }
+
+    public void Blink(float duration)
+    {
+        if (blinkRoutine != null)
+            StopCoroutine(blinkRoutine);
+
+        blinkRoutine = StartCoroutine(BlinkRoutine(duration));
+    }
+
+    private IEnumerator BlinkRoutine(float duration)
+    {
+        float elapsed = 0f;
+        bool visible = true;
+
+        while (elapsed < duration)
+        {
+            visible = !visible;
+            spriteRenderer.enabled = visible;
+
+            yield return new WaitForSecondsRealtime(blinkInterval);
+            elapsed += blinkInterval;
+        }
+
+        spriteRenderer.enabled = true;
+        blinkRoutine = null;
     }
 }

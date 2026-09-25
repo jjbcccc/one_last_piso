@@ -95,17 +95,11 @@ public class PhiController : MonoBehaviour
             lockoutCounter -= Time.deltaTime;
             isGrounded = false;
             coyoteCounter -= Time.deltaTime;
+            if (debugGround) Debug.Log($"[locked out] velY={rb.linearVelocity.y:F2}");
             return;
         }
 
-        bool overlap = Physics2D.OverlapCircle(
-            groundCheck.position, groundCheckRadius, groundLayer);
-
-        // Not grounded while moving upward
-        if (rb.linearVelocity.y > 0.01f)
-            overlap = false;
-
-        isGrounded = overlap;
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         if (isGrounded)
         {
@@ -177,9 +171,14 @@ public class PhiController : MonoBehaviour
 
         if (jumpBufferCounter <= 0f) return;
         if (jumpsRemaining <= 0) return;
-        if (coyoteCounter <= 0f) return;   // must be grounded or in coyote time
 
-        Jump();
+        bool isFirstJump = jumpsRemaining == maxJumps;
+
+        // Only the first jump needs to be grounded or within coyote time.
+        // The second (double) jump only needs an available jump charge.
+        if (isFirstJump && coyoteCounter <= 0f) return;
+
+        Jump(!isFirstJump);
         jumpBufferCounter = 0f;
         coyoteCounter = 0f;
         jumpsRemaining--;

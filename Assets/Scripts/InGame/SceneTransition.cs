@@ -96,4 +96,9 @@ public class SceneTransition : MonoBehaviour
         final.a = targetAlpha;
         fadeImage.color = final;
     }
+
+    public void FadeOutForDeath()
+    {
+        if (fadeImage != null) StartCoroutine(FadeTo(1f));
+    }
 }
