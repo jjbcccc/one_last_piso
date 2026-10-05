@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class Stage1Finish : MonoBehaviour
 {
     [SerializeField] private GameObject finishPage;
-    [SerializeField] private string nextStageScene = "StageSelect";
+    //[SerializeField] private string nextStageScene = "Stage2";
 
     private bool stageFinished = false;
 
@@ -23,6 +23,7 @@ public class Stage1Finish : MonoBehaviour
         if (!other.CompareTag("Player")) return;
 
         stageFinished = true;
+        StageProgress.UnlockStage(2); // Unlock Stage 2 when Stage 1 is finished
 
         if (finishPage != null)
             finishPage.SetActive(true);
@@ -55,6 +56,6 @@ public class Stage1Finish : MonoBehaviour
     public void NextStage()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(nextStageScene);
+        SceneManager.LoadScene("Stage2");
     }
 }

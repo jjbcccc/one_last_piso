@@ -131,10 +131,10 @@ TextureImporter:
       name: SettingsBtn_0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 147
-        width: 496
-        height: 214
+        x: 0
+        y: 0
+        width: 462
+        height: 205
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

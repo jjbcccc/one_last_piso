@@ -15,7 +15,7 @@ public class StageSelectUI : MonoBehaviour
         stage1Button.interactable = true;
 
         // Stage 2 and Stage 3 are locked for now.
-        stage2Button.interactable = false;
+        stage2Button.interactable = true;
         stage3Button.interactable = false;
     }
 

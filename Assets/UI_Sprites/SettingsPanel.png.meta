@@ -5,9 +5,6 @@ TextureImporter:
   - first:
       213: 7727061048343393717
     second: SettingsPanel_0
-  - first:
-      213: 6931249226883644931
-    second: SettingsPanel_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -134,10 +131,10 @@ TextureImporter:
       name: SettingsPanel_0
       rect:
         serializedVersion: 2
-        x: 18
+        x: 0
         y: 0
-        width: 459
-        height: 467
+        width: 1019
+        height: 1069
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -148,28 +145,6 @@ TextureImporter:
       bones: []
       spriteID: 5b5f34075190c3b60800000000000000
       internalID: 7727061048343393717
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SettingsPanel_1
-      rect:
-        serializedVersion: 2
-        x: 96
-        y: 407
-        width: 253
-        height: 93
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 30eb912d27eb03060800000000000000
-      internalID: 6931249226883644931
       vertices: []
       indices: 
       edges: []
@@ -189,7 +164,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       SettingsPanel_0: 7727061048343393717
-      SettingsPanel_1: 6931249226883644931
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

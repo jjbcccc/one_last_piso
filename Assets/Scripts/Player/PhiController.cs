@@ -26,6 +26,12 @@ public class PhiController : MonoBehaviour
     [Header("Stance")]
     [SerializeField] private float hiddenScaleY = 0.45f;
 
+    [Header("Safe Position Tracking")]
+    [SerializeField] private float safePositionRecordInterval = 0.05f;   // how often to record
+
+    private Vector2 lastSafePosition;
+    private float safeRecordTimer;
+
     private Rigidbody2D rb;
 
     private float horizontalInput;
@@ -52,6 +58,9 @@ public class PhiController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         normalScale = transform.localScale;
         jumpsRemaining = maxJumps;
+
+        // Initialize safe position to spawn position
+        lastSafePosition = transform.position;
     }
 
     private void Update()
@@ -60,6 +69,7 @@ public class PhiController : MonoBehaviour
         CheckGround();
         HandleJumpInput();
         HandleStance();
+        TrackSafePosition();
     }
 
     private void FixedUpdate()
@@ -230,5 +240,38 @@ public class PhiController : MonoBehaviour
 
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+    }
+
+    private void TrackSafePosition()
+    {
+        safeRecordTimer -= Time.deltaTime;
+
+        if (safeRecordTimer > 0f) return;
+
+        safeRecordTimer = safePositionRecordInterval;
+
+        // Only record if Phi is firmly on the ground and standing still vertically
+        if (!isGrounded) return;
+        if (rb.linearVelocity.y > 0.5f) return;   // not while jumping
+
+        // Record the current position as the last safe spot
+        lastSafePosition = transform.position;
+    }
+
+    public void ReturnToSafePosition()
+    {
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+
+        transform.position = new Vector3(
+            lastSafePosition.x,
+            lastSafePosition.y,
+            transform.position.z
+        );
+
+        Debug.Log($"[PhiController] Returned to safe position: {lastSafePosition}");
     }
 }
