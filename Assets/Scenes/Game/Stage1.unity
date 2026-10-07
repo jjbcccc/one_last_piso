@@ -944,7 +944,7 @@ BoxCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 88c19e8c687845949a89b929a1e330ec, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1984,7 +1984,7 @@ MonoBehaviour:
   sightAngle: 30
   sightBlockers:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
   hearingRange: 7
   eyePoint: {fileID: 0}
   groundCheckLeft: {fileID: 0}
@@ -3323,7 +3323,7 @@ BoxCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 88c19e8c687845949a89b929a1e330ec, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -5677,7 +5677,7 @@ MonoBehaviour:
   sightAngle: 30
   sightBlockers:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
   hearingRange: 7
   eyePoint: {fileID: 0}
   groundCheckLeft: {fileID: 0}
@@ -7031,7 +7031,7 @@ MonoBehaviour:
   sightAngle: 30
   sightBlockers:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
   hearingRange: 7
   eyePoint: {fileID: 0}
   groundCheckLeft: {fileID: 0}
@@ -8032,7 +8032,7 @@ MonoBehaviour:
   sightAngle: 30
   sightBlockers:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
   hearingRange: 7
   eyePoint: {fileID: 0}
   groundCheckLeft: {fileID: 0}
