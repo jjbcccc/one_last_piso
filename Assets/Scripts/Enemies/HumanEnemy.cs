@@ -217,6 +217,9 @@ public class HumanEnemy : MonoBehaviour
     {
         if (chaseTarget == null) return DetectionType.None;
 
+        // Skip detection if Phi is ghosted by power-up
+        if (DirtDustEffect.IsPhiGhosted) return DetectionType.None;
+
         // If Phi is hiding, he's invisible AND silent
         if (phi != null && phi.IsHiding)
         {

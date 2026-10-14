@@ -231,6 +231,9 @@ public class BirdEnemy : MonoBehaviour
     {
         if (chaseTarget == null) return DetectionType.None;
 
+        // Skip detection if Phi is ghosted by power-up
+        if (DirtDustEffect.IsPhiGhosted) return DetectionType.None;
+
         if (phi != null && phi.IsHiding)
         {
             lastDetection = DetectionType.None;

@@ -31,6 +31,11 @@ public class PhiHealth : MonoBehaviour
     public void TakeDamage(int amount = 1)
     {
         if (currentLives <= 0) return;
+
+        // Ignore if ghosted by a power-up
+        DirtDustEffect effect = GetComponent<DirtDustEffect>();
+        if (effect != null && effect.IsActive) return;
+
         if (Time.time - lastHitTime < invincibilityDuration) return;
 
         currentLives -= amount;
