@@ -48,6 +48,10 @@ public class PhiController : MonoBehaviour
 
     public bool IsHiding => isHiding;
 
+    public event System.Action OnJumped;
+    public event System.Action OnHideToggled;
+
+
     // External input from mobile UI buttons
     public float ExternalHorizontal { get; set; }
     public bool ExternalJumpPressed { get; set; }
@@ -198,6 +202,7 @@ public class PhiController : MonoBehaviour
     {
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         lockoutCounter = groundCheckLockout;
+        OnJumped?.Invoke();
     }
 
     private void HandleStance()
@@ -232,6 +237,7 @@ public class PhiController : MonoBehaviour
         {
             transform.localScale = normalScale;
         }
+        OnHideToggled?.Invoke();
     }
 
     private void OnDrawGizmosSelected()
@@ -252,7 +258,7 @@ public class PhiController : MonoBehaviour
 
         // Only record if Phi is firmly on the ground and standing still vertically
         if (!isGrounded) return;
-        if (rb.linearVelocity.y > 0.5f) return;   // not while jumping
+        if (rb.linearVelocity.y > 0.1f) return;   // not while jumping
 
         // Record the current position as the last safe spot
         lastSafePosition = transform.position;
